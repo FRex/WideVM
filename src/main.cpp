@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     std::string error;
-    if(!wvm::assemble(code.c_str(), vm.program, &error))
+    if(!wvm::assemble(code, vm.program, &error))
     {
         std::printf("%s\n", error.c_str());
         return 1;

@@ -23,19 +23,19 @@ public:
     std::vector<int> subprograms;
 
     std::vector<float> globals; //globals, read only to script -- for now
-    
+
     int particlesize;
     int pc;
 
     //range for current program:
     int begin;
     int end;
-    
+
     //which particle is being done now
     int pindex;
-    
+
     WideVM();
-    
+
     void init(int size, int count, const float * initvals = nullptr);
     void runVmProgram(int subprog, int b = -1, int e = -1);
     int particleCount() const;
@@ -48,19 +48,16 @@ private:
     float& write(int index); //write to a particle field
     void startLoop();
     bool loopParticles();
-    
+
     //opcode calls:
     void opQuit();
-    void opAccumulate();
-    void opDeaccumulate();
     void opSin();
     void opCos();
-    void opRand();
     void opCopy();
     void opRand2();
     void opMath2();
-    
-    
+
+
     std::mt19937 m_twister;
     std::uniform_real_distribution<float> m_normalrand = std::uniform_real_distribution<float>(0.f, 1.f);
 };

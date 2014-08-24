@@ -38,20 +38,11 @@ void WideVM::runVmProgram(int subprog, int b, int e)
             case EVO_QUIT:
                 opQuit();
                 break;
-            case EVO_ACCUMULATE:
-                opAccumulate();
-                break;
-            case EVO_DEACCUMULATE:
-                opDeaccumulate();
-                break;
             case EVO_SIN:
                 opSin();
                 break;
             case EVO_COS:
                 opCos();
-                break;
-            case EVO_RAND:
-                opRand();
                 break;
             case EVO_COPY:
                 opCopy();
@@ -129,30 +120,6 @@ void WideVM::opQuit()
     pc = program.size(); //trick program into thinking codes ran out
 }
 
-void WideVM::opAccumulate()
-{
-    const int accu = program[++pc];
-    const int operand = program[++pc];
-
-    for(int i = begin; i < end; ++i)
-    {
-        float * ptr = getParticle(i);
-        ptr[accu] += ptr[operand];
-    }
-}
-
-void WideVM::opDeaccumulate()
-{
-    const int accu = program[++pc];
-    const int operand = program[++pc];
-
-    for(int i = begin; i < end; ++i)
-    {
-        float * ptr = getParticle(i);
-        ptr[accu] -= ptr[operand];
-    }
-}
-
 void WideVM::opSin()
 {
     const int result = program[++pc];
@@ -174,17 +141,6 @@ void WideVM::opCos()
     {
         float * ptr = getParticle(i);
         ptr[result] = std::cos(ptr[arg]);
-    }
-}
-
-void WideVM::opRand()
-{
-    const int result = program[++pc];
-
-    for(int i = begin; i < end; ++i)
-    {
-        float * ptr = getParticle(i);
-        ptr[result] = m_normalrand(m_twister);
     }
 }
 
@@ -223,10 +179,10 @@ void WideVM::opMath2()
         switch(op)
         {
             case 1:
-                write(to) = read(arg1) - read(arg2);
+                write(to) = read(arg1) + read(arg2);
                 break;
             case 2:
-                write(to) = read(arg1) + read(arg2);
+                write(to) = read(arg1) - read(arg2);
                 break;
             case 3:
                 write(to) = read(arg1) * read(arg2);

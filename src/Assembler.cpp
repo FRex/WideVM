@@ -6,12 +6,25 @@
 
 namespace wvm {
 
-bool assemble(const char * code, std::vector<short>& outopcodes, std::string * error)
+static void stripAsmComments(std::string& str)
 {
+    bool erasing = false;
+    str += ' ';
+    for(std::size_t i = 1u; i < str.size(); ++i)
+    {
+        if(str[i] == '\n') erasing = false;
+        if(str[i] == '/' && str[i + 1u] == '/') erasing = true;
+        if(erasing) str[i] = ' ';
+    }
+}
+
+bool assemble(std::string code, std::vector<short>& outopcodes, std::string * error)
+{
+    stripAsmComments(code);
     std::istringstream ss(code);
     std::string asmcommand;
     outopcodes.clear();
-    
+
     while(ss >> asmcommand)
     {
         const EVM_OPCODE opcode = strToOpcode(asmcommand.c_str(), asmcommand.size());

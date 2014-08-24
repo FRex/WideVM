@@ -13,7 +13,7 @@
 
 namespace wvm {
 
-bool assemble(const char * code, std::vector<short>& outopcodes, std::string * error = nullptr);
+bool assemble(std::string code, std::vector<short>& outopcodes, std::string * error = nullptr);
 
 }
 
