@@ -17,6 +17,13 @@ enum EVM_OPCODE
     EVO_SUBPROGRAM = 2, //0 args -- beginning of a sub program
     EVO_DEACCUMULATE = 3, //2 args -- subtract 2nd arg from 1st
 
+    EVO_SIN = 4, //2 args -- put into 1st the value of sin(2nd)
+    EVO_COS = 5, //2 args -- put into 1st the value of cos(2nd)
+    EVO_RAND = 6, //1 arg -- put into it the rand 0..1 value
+    EVO_COPY = 7, //2 args -- copy from 2nd into 1st
+    EVO_RAND2 = 8, //3 args -- put into 1st the value of random(2nd,3rd)
+    EVO_MATH2 = 9, //4 args -- first is op, 2nd is place to put result, 3rd and 4th are operands
+
     EVO_OPCODES_COUNT //keep last, 'invalid' opcode, not EVO_COUNT in case there is a real count opcode later
 };
 

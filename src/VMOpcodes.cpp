@@ -19,6 +19,15 @@ const OpcodeInfo infos[] = {
     {EVO_SUBPROGRAM, 0, "subprog"},
     {EVO_DEACCUMULATE, 2, "deaccu"},
 
+    {EVO_SIN, 2, "sin"},
+    {EVO_COS, 2, "cos"},
+    {EVO_RAND, 1, "rand"},
+    {EVO_COPY, 2, "copy"},
+    {EVO_RAND2, 3, "rand2"},
+    {EVO_MATH2, 4, "math2"},
+
+
+
 
     {EVO_OPCODES_COUNT, 0, ""} //keep last!
 };
