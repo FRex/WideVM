@@ -55,7 +55,6 @@ void WideVM::runVmProgram(int subprog, int b, int e)
                 opMath2();
                 break;
         } //switch opcodes pc
-        ++pc;
     } //while pc < opcodes size
 }
 
