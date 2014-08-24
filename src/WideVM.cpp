@@ -18,9 +18,12 @@ void WideVM::init(int size, int count, const float* initvals)
     }
 }
 
-void WideVM::runVmProgram()
+void WideVM::runVmProgram(int subprog, int b, int e)
 {
-    pc = 0;
+    begin = (b == -1)?0:b;
+    end = (e == -1)?particleCount():e;
+
+    pc = subprograms[subprog];
     while(pc < program.size())
     {
         switch(program[pc])
@@ -46,13 +49,20 @@ float* WideVM::getParticle(int index)
     return data.data() + index * particlesize;
 }
 
-void WideVM::loadProgram(const std::string& filename)
+void WideVM::findSubprograms()
 {
-    std::ifstream file(filename.c_str());
-    int opcode;
-    program.clear();
-    while(file >> opcode)
-        program.push_back(opcode);
+    subprograms.clear();
+    for(int i = 0; i < program.size(); ++i)
+    {
+        if(program[i] == EVO_SUBPROGRAM)
+        {
+            subprograms.push_back(i);
+        }
+        else
+        {
+            i += opcodeArgCount(static_cast<EVM_OPCODE>(program[i]));
+        }
+    }
 }
 
 //opcode calls:
@@ -67,7 +77,7 @@ void WideVM::opAccumulate()
     const int accu = program[++pc];
     const int operand = program[++pc];
 
-    for(int i = 0; i < particleCount(); ++i)
+    for(int i = begin; i < end; ++i)
     {
         float * ptr = getParticle(i);
         ptr[accu] += ptr[operand];

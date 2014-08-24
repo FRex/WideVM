@@ -45,6 +45,7 @@ int main(int argc, char** argv)
         std::printf("%s\n", error.c_str());
         return 1;
     }
+    vm.findSubprograms();
 
     sf::VertexArray arr(sf::Points, vm.particleCount());
 
@@ -53,7 +54,7 @@ int main(int argc, char** argv)
         sf::Event eve;
         while(app.pollEvent(eve))if(eve.type == sf::Event::Closed) app.close();
 
-        vm.runVmProgram();
+        vm.runVmProgram(0);
 
         app.clear();
         for(int i = 0; i < vm.particleCount(); ++i)
