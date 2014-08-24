@@ -124,7 +124,7 @@ VMLocation WideVM::getFieldLocation(const std::string& name) const
     return ret;
 }
 
-bool WideVM::loadAsmProgram(const std::string& programcode, std::string * error)
+bool WideVM::loadAsmProgram(std::string programcode, std::string * error)
 {
     const std::size_t atmark = programcode.find_first_of('@');
     if(atmark == std::string::npos)
@@ -135,6 +135,7 @@ bool WideVM::loadAsmProgram(const std::string& programcode, std::string * error)
         return false;
     }
 
+    stripCppComments(programcode);
 
     if(!bakeHeader(programcode.substr(0, atmark + 1u), m_globalnames, globals, m_channelnames, m_prognames, error))
     {

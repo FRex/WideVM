@@ -103,7 +103,7 @@ public:
     float getGlobal(VMLocation loc) const;
     VMLocation getGlobalLocation(const std::string& name) const;
 
-    bool loadAsmProgram(const std::string& programcode, std::string * error = nullptr); //load entire asm program
+    bool loadAsmProgram(std::string programcode, std::string * error = nullptr); //load entire asm program
 
     VMLocation getFieldLocation(const std::string& name) const;
     

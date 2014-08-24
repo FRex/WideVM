@@ -6,7 +6,7 @@
 
 namespace wvm {
 
-static void stripAsmComments(std::string& str)
+void stripCppComments(std::string& str)
 {
     bool erasing = false;
     str += ' ';
@@ -20,7 +20,6 @@ static void stripAsmComments(std::string& str)
 
 bool assemble(std::string code, std::vector<short>& outopcodes, std::string * error)
 {
-    stripAsmComments(code);
     std::istringstream ss(code);
     std::string asmcommand;
     outopcodes.clear();
@@ -66,7 +65,6 @@ bool assemble(std::string code, std::vector<short>& outopcodes, std::string * er
 bool bakeHeader(std::string code, vecs globals, std::vector<float>& values, vecs channels, vecs pnames, std::string * error)
 #undef vecs
 {
-    //stripAsmComments(code);
     //add error handling here?
     globals.clear();
     values.clear();

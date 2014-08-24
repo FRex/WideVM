@@ -13,6 +13,8 @@
 
 namespace wvm {
 
+void stripCppComments(std::string& str);
+
 bool assemble(std::string code, std::vector<short>& outopcodes, std::string * error = nullptr);
 
 #define vecs std::vector<std::string>&
