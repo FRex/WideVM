@@ -191,6 +191,9 @@ void WideVM::opMath2()
             case 3:
                 write(to) = read(arg1) * read(arg2);
                 break;
+            case 4:
+                write(to) = read(arg1) / read(arg2);
+                break;
         }
     } //loopParticles
 }
