@@ -42,6 +42,8 @@ public:
     float * getParticle(int index);
     void findSubprograms();
 
+    void addParticles(int amount, int runprogram = -1);
+
 private:
     //helpers for opcodes:
     int fetch(); //fetch a value from bytecode and increment program counter

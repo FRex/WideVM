@@ -84,6 +84,16 @@ void WideVM::findSubprograms()
     }
 }
 
+void WideVM::addParticles(int amount, int runprogram)
+{
+    const int oldsize = particleCount();
+    data.resize(data.size() + amount * particlesize, 0.f);
+    if(runprogram != -1)
+    {
+        runVmProgram(runprogram, oldsize);
+    }
+}
+
 //helpers for opcodes:
 
 int WideVM::fetch()

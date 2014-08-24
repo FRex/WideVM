@@ -61,6 +61,15 @@ int main(int argc, char** argv)
             {
                 if(eve.key.code == sf::Keyboard::Escape) app.close();
             }
+            if(eve.type == sf::Event::MouseButtonPressed)
+            {
+                //set up the globals for next prog:
+                vm.globals[0] = eve.mouseButton.x;
+                vm.globals[1] = eve.mouseButton.y;
+                //run 0 prog on 100 new particles
+                vm.addParticles(100, 0);
+                arr.resize(arr.getVertexCount() + 100u);
+            }
         }
 
         vm.runVmProgram(1);
