@@ -6,6 +6,7 @@
  */
 
 #include <random>
+#include <cmath>
 #include <fstream>
 #include <iterator>
 #include <SFML/Graphics.hpp>
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
         float * ptr = vm.getParticle(i);
         const float angle = distr(twister);
         const float speed = speeddistr(twister);
-        ptr[2] = speed * std::cos(angle);
+        ptr[2] = std::fabs(speed * std::cos(angle));
         ptr[3] = speed * std::sin(angle);
     }
 
@@ -48,13 +49,23 @@ int main(int argc, char** argv)
     vm.findSubprograms();
 
     sf::VertexArray arr(sf::Points, vm.particleCount());
+    int prog = 0;
 
     while(app.isOpen())
     {
         sf::Event eve;
-        while(app.pollEvent(eve))if(eve.type == sf::Event::Closed) app.close();
+        while(app.pollEvent(eve))
+        {
+            if(eve.type == sf::Event::Closed) app.close();
+            if(eve.type == sf::Event::KeyPressed)
+            {
+                if(eve.key.code == sf::Keyboard::A) prog = 1;
+                if(eve.key.code == sf::Keyboard::D) prog = 0;
+                if(eve.key.code == sf::Keyboard::Escape) app.close();
+            }
+        }
 
-        vm.runVmProgram(0);
+        vm.runVmProgram(prog);
 
         app.clear();
         for(int i = 0; i < vm.particleCount(); ++i)

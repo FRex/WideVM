@@ -15,6 +15,7 @@ enum EVM_OPCODE
     EVO_QUIT = 0, //0 args -- quit the current program
     EVO_ACCUMULATE = 1, //2 args -- add 2nd arg to 1st
     EVO_SUBPROGRAM = 2, //0 args -- beginning of a sub program
+    EVO_DEACCUMULATE = 3, //2 args -- subtract 2nd arg from 1st
 
     EVO_OPCODES_COUNT //keep last, 'invalid' opcode, not EVO_COUNT in case there is a real count opcode later
 };

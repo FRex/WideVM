@@ -17,7 +17,7 @@ const OpcodeInfo infos[] = {
     {EVO_QUIT, 0, "quit"},
     {EVO_ACCUMULATE, 2, "accu"},
     {EVO_SUBPROGRAM, 0, "subprog"},
-
+    {EVO_DEACCUMULATE, 2, "deaccu"},
 
 
     {EVO_OPCODES_COUNT, 0, ""} //keep last!

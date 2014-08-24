@@ -2,3 +2,7 @@ subprog
 accu 0 2
 accu 1 3
 quit
+subprog
+deaccu 0 2
+accu 1 3
+quit

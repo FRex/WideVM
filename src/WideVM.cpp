@@ -34,6 +34,9 @@ void WideVM::runVmProgram(int subprog, int b, int e)
             case EVO_ACCUMULATE:
                 opAccumulate();
                 break;
+            case EVO_DEACCUMULATE:
+                opDeaccumulate();
+                break;
         } //switch opcodes pc
         ++pc;
     } //while pc < opcodes size
@@ -81,6 +84,18 @@ void WideVM::opAccumulate()
     {
         float * ptr = getParticle(i);
         ptr[accu] += ptr[operand];
+    }
+}
+
+void WideVM::opDeaccumulate()
+{
+    const int accu = program[++pc];
+    const int operand = program[++pc];
+
+    for(int i = begin; i < end; ++i)
+    {
+        float * ptr = getParticle(i);
+        ptr[accu] -= ptr[operand];
     }
 }
 
