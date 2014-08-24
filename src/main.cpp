@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
             fps = 100.f / fps;
             fpssamplecounter = 0;
-            std::printf("FPS: %f\n", fps);
+            std::printf("FPS: %f\n PARTICLES: %d\n", fps, vm.particleCount());
         }
     }//while app isOpen
 }
