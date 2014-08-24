@@ -29,6 +29,8 @@ void WideVM::runVmProgram(VMLocation loc, int b, int e)
     if(loc.Location == -1)
         loc.Location = findStrInVector(loc.Name, m_prognames);
 
+    if(loc.Location == -1) return;
+
     m_programcounter = subprograms[loc.Location];
     while(m_programcounter < program.size())
     {
@@ -99,6 +101,7 @@ void WideVM::setGlobal(VMLocation loc, float value)
     if(loc.Location == -1)
         loc.Location = findStrInVector(loc.Name, m_globalnames);
 
+    if(loc.Location == -1) return;
     globals[loc.Location] = value;
 }
 
@@ -107,6 +110,7 @@ float WideVM::getGlobal(VMLocation loc) const
     if(loc.Location == -1)
         loc.Location = findStrInVector(loc.Name, m_globalnames);
 
+    if(loc.Location == -1) return 0.f;
     return globals[loc.Location];
 }
 
