@@ -5,92 +5,10 @@
  * Created on August 24, 2014, 12:43 AM
  */
 
-#include <cstdlib>
-#include <vector>
-#include <cstdio>
-#include <fstream>
-#include <string>
-#include <cstring>
 #include <random>
 #include <SFML/Graphics.hpp>
 
-enum EVM_OPCODE
-{
-    EVO_ACCUMULATE = 1,
-};
-
-class WideVM
-{
-public:
-    std::vector<float> data;
-    std::vector<char> program;
-
-    int particlesize = 2;
-    int pc;
-
-    void init(int size, int count, const float * initvals = nullptr)
-    {
-        particlesize = size;
-        data.resize(size*count, 0.f);
-        if(initvals)
-        {
-            for(int i = 0; i < particleCount(); ++i)
-            {
-                std::memcpy(getParticle(i), initvals, sizeof (float)* size);
-            }
-        }
-    }
-
-    void runVmProgram()
-    {
-        pc = 0;
-        while(pc < program.size())
-        {
-            switch(program[pc])
-            {
-                case EVO_ACCUMULATE:
-                    opAccumulate();
-                    break;
-            } //switch opcodes pc
-            ++pc;
-        } //while pc < opcodes size
-    }
-
-    int particleCount() const
-    {
-        return data.size() / particlesize;
-    }
-
-    float * getParticle(int index)
-    {
-        return data.data() + index * particlesize;
-    }
-
-    void opAccumulate()
-    {
-        const int accu = program[++pc];
-        const int operand = program[++pc];
-
-        for(int i = 0; i < particleCount(); ++i)
-        {
-            float * ptr = getParticle(i);
-            ptr[accu] += ptr[operand];
-        }
-    }
-
-    void loadProgram(const std::string& filename)
-    {
-        std::ifstream file(filename.c_str());
-        int opcode;
-        program.clear();
-        while(file >> opcode)
-            program.push_back(opcode);
-    }
-
-private:
-
-
-};
+#include "WideVM.hpp"
 
 int main(int argc, char** argv)
 {
@@ -101,7 +19,7 @@ int main(int argc, char** argv)
     sf::RenderWindow app(sf::VideoMode(640u, 480u), "wide vm");
     app.setFramerateLimit(60u);
 
-    WideVM vm;
+    wvm::WideVM vm;
     const float initfloats[] = {320.f, 240.f, 0.f, 0.f};
     vm.init(4, 1000, initfloats);
 
