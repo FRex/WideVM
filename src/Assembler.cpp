@@ -10,7 +10,7 @@ static void stripAsmComments(std::string& str)
 {
     bool erasing = false;
     str += ' ';
-    for(std::size_t i = 1u; i < str.size(); ++i)
+    for(std::size_t i = 0u; i < str.size(); ++i)
     {
         if(str[i] == '\n') erasing = false;
         if(str[i] == '/' && str[i + 1u] == '/') erasing = true;
