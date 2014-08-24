@@ -16,8 +16,13 @@ enum EVM_OPCODE
     EVO_ACCUMULATE = 1, //2 args -- add 2nd arg to 1st
 
 
-    EVO_OPCODES_COUNT //count, keep last, 'invalid'
+    EVO_OPCODES_COUNT //keep last, 'invalid' opcode, not EVO_COUNT in case there is a real count opcode later
 };
+
+int opcodeArgCount(EVM_OPCODE code);
+
+const char * opcodeToStr(EVM_OPCODE code);
+EVM_OPCODE strToOpcode(const char * str, int size = -1);
 
 }
 
