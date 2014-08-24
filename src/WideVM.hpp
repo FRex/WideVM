@@ -14,6 +14,28 @@
 
 namespace wvm {
 
+class VMLocation
+{
+    friend class WideVM;
+public:
+
+    VMLocation() = default;
+
+    VMLocation(const char * name) : Name(name) { }
+
+    VMLocation(const std::string& name) : Name(name.c_str()) { }
+
+    bool valid() const
+    {
+        return Name != nullptr || Location != -1;
+    }
+    
+private:
+    const char * Name = nullptr;
+    int Location = -1;
+
+};
+
 class WideVM
 {
 public:
@@ -27,12 +49,17 @@ public:
 
 
     WideVM();
-    void init(int size, int count, const float * initvals = nullptr);
-    void runVmProgram(int subprog, int b = -1, int e = -1);
+    void runVmProgram(VMLocation loc, int b = -1, int e = -1);
     int particleCount() const;
     float * getParticle(int index);
     void findSubprograms();
-    void addParticles(int amount, int runprogram = -1);
+    void addParticles(int amount, VMLocation runprogram = VMLocation());
+
+    void setGlobal(VMLocation loc, float value);
+    float getGlobal(VMLocation loc) const;
+    VMLocation getGlobalLocation(const std::string& name) const;
+
+    bool loadAsmProgram(const std::string& programcode, std::string * error = nullptr); //load entire asm program
 
 private:
     //helpers for opcodes:
@@ -50,6 +77,10 @@ private:
     void opRand2();
     void opMath2();
 
+    //strings:
+    std::vector<std::string> m_channelnames;
+    std::vector<std::string> m_globalnames;
+    std::vector<std::string> m_prognames;
 
     //range for current program:
     int m_begin;

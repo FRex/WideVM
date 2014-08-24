@@ -61,4 +61,47 @@ bool assemble(std::string code, std::vector<short>& outopcodes, std::string * er
     return true;
 }
 
+#define vecs std::vector<std::string>&
+
+bool bakeHeader(std::string code, vecs globals, std::vector<float>& values, vecs channels, vecs pnames, std::string * error)
+#undef vecs
+{
+    //stripAsmComments(code);
+    //add error handling here?
+    globals.clear();
+    values.clear();
+    channels.clear();
+    pnames.clear();
+    std::istringstream ss(code);
+    std::string str;
+    int count;
+
+    ss >> count>>str; //count and GLOBALS
+    for(int i = 0; i < count; ++i)
+    {
+        ss>>str;
+        globals.push_back(str);
+        float val;
+        ss>>val;
+        values.push_back(val);
+    }
+
+    ss >> count>>str; //count and CHANNELS
+    for(int i = 0; i < count; ++i)
+    {
+        ss>>str;
+        channels.push_back(str);
+    }
+
+    ss >> count >> str; //count and SUBS
+    for(int i = 0; i < count; ++i)
+    {
+        ss>>str;
+        pnames.push_back(str);
+    }
+
+    ss>>str; //@
+    return true;
+}
+
 }

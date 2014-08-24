@@ -15,6 +15,10 @@ namespace wvm {
 
 bool assemble(std::string code, std::vector<short>& outopcodes, std::string * error = nullptr);
 
+#define vecs std::vector<std::string>&
+bool bakeHeader(std::string code, vecs globals, std::vector<float>& values, vecs channels, vecs pnames, std::string * error = nullptr);
+#undef vecs
+
 }
 
 #endif	/* ASSEMBLER_HPP */

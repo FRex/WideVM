@@ -26,28 +26,18 @@ int main(int argc, char** argv)
     app.setFramerateLimit(60u);
 
     wvm::WideVM vm;
-    //const float initfloats[] = {320.f, 240.f, 0.f, 0.f};
-    vm.init(4, 1000);
 
-    std::ifstream file("code.txt");
+    std::ifstream file("program.txt");
     std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     std::string error;
-    if(!wvm::assemble(code, vm.program, &error))
+    if(!vm.loadAsmProgram(code, &error))
     {
         std::printf("%s\n", error.c_str());
         return 1;
     }
-    vm.findSubprograms();
 
-    vm.globals.push_back(320.f); //-1 is x
-    vm.globals.push_back(240.f); //-2 is y
-    vm.globals.push_back(M_PI); //-3 is pi
-    vm.globals.push_back(-M_PI); //-4 is -pi
-    vm.globals.push_back(0.5f); //-5 is 0.5f
-    vm.globals.push_back(2.f); //-6 is 2.f
-
-    vm.runVmProgram(0); //init all particles
+    vm.addParticles(1000, "init"); //init with 1000 particles
 
     sf::VertexArray arr(sf::Points, vm.particleCount());
 
@@ -67,12 +57,12 @@ int main(int argc, char** argv)
                 vm.globals[0] = eve.mouseButton.x;
                 vm.globals[1] = eve.mouseButton.y;
                 //run 0 prog on 100 new particles
-                vm.addParticles(100, 0);
+                vm.addParticles(100, "init");
                 arr.resize(arr.getVertexCount() + 100u);
             }
         }
 
-        vm.runVmProgram(1);
+        vm.runVmProgram("run");
 
         app.clear();
         for(int i = 0; i < vm.particleCount(); ++i)

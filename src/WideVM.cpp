@@ -1,35 +1,35 @@
 #include "WideVM.hpp"
 #include "VMOpcodes.hpp"
+#include "Assembler.hpp"
 #include <fstream>
 #include <cstring>
 #include <cmath>
 
 namespace wvm {
 
+static int findStrInVector(const char * str, const std::vector<std::string>& vec)
+{
+    if(str)
+        for(int i = 0; i < vec.size(); ++i)
+            if(vec[i] == str) return i;
+
+    return -1;
+}
+
 WideVM::WideVM()
 {
     m_twister.seed(std::rand());
 }
 
-void WideVM::init(int size, int count, const float* initvals)
-{
-    m_particlesize = size;
-    data.resize(size*count, 0.f);
-    if(initvals)
-    {
-        for(int i = 0; i < particleCount(); ++i)
-        {
-            std::memcpy(getParticle(i), initvals, sizeof (float)* size);
-        }
-    }
-}
-
-void WideVM::runVmProgram(int subprog, int b, int e)
+void WideVM::runVmProgram(VMLocation loc, int b, int e)
 {
     m_begin = (b == -1)?0:b;
     m_end = (e == -1)?particleCount():e;
 
-    m_programcounter = subprograms[subprog];
+    if(loc.Location == -1)
+        loc.Location = findStrInVector(loc.Name, m_prognames);
+
+    m_programcounter = subprograms[loc.Location];
     while(m_programcounter < program.size())
     {
         startLoop(); //in case an opcode uses while loopParticle init counter for it
@@ -84,14 +84,66 @@ void WideVM::findSubprograms()
     }
 }
 
-void WideVM::addParticles(int amount, int runprogram)
+void WideVM::addParticles(int amount, VMLocation runprogram)
 {
     const int oldsize = particleCount();
     data.resize(data.size() + amount * m_particlesize, 0.f);
-    if(runprogram != -1)
+    if(runprogram.valid())
     {
         runVmProgram(runprogram, oldsize);
     }
+}
+
+void WideVM::setGlobal(VMLocation loc, float value)
+{
+    if(loc.Location == -1)
+        loc.Location = findStrInVector(loc.Name, m_globalnames);
+
+    globals[loc.Location] = value;
+}
+
+float WideVM::getGlobal(VMLocation loc) const
+{
+    if(loc.Location == -1)
+        loc.Location = findStrInVector(loc.Name, m_globalnames);
+
+    return globals[loc.Location];
+}
+
+VMLocation WideVM::getGlobalLocation(const std::string& name) const
+{
+    VMLocation ret;
+    ret.Location = findStrInVector(name.c_str(), m_globalnames);
+    return ret;
+}
+
+bool WideVM::loadAsmProgram(const std::string& programcode, std::string * error)
+{
+    const std::size_t atmark = programcode.find_first_of('@');
+    if(atmark == std::string::npos)
+    {
+        if(error)
+            (*error) = "no @ char (separator of header and code) found";
+
+        return false;
+    }
+
+
+    if(!bakeHeader(programcode.substr(0, atmark + 1u), m_globalnames, globals, m_channelnames, m_prognames, error))
+    {
+        return false;
+    }
+
+    m_particlesize = m_channelnames.size();
+
+    if(!assemble(programcode.substr(atmark + 1u), program, error))
+    {
+        return false;
+    }
+
+    findSubprograms(); //check if we have any sub progs?
+
+    return true;
 }
 
 //helpers for opcodes:

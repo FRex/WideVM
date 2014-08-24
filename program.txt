@@ -1,3 +1,23 @@
+6 GLOBALS
+x           320.0
+y           240.0
+pi          3.141592
+mpi         -3.141592
+minspeed    0.5
+maxspeed    2.0
+
+4 CHANNELS
+x
+y
+vx
+vy
+
+2 SUBS
+init
+run
+
+@
+
 //init program:
 subprog
 rand2 0 -3 -4
