@@ -44,6 +44,7 @@ public:
 
 private:
     //helpers for opcodes:
+    int fetch(); //fetch a value from bytecode and increment program counter
     float read(int index); //read a particle field or constant
     float& write(int index); //write to a particle field
     void startLoop();

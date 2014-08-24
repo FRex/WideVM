@@ -33,7 +33,8 @@ void WideVM::runVmProgram(int subprog, int b, int e)
     while(pc < program.size())
     {
         startLoop(); //in case an opcode uses while loopParticle init counter for it
-        switch(program[pc])
+        const int opcode = fetch();
+        switch(opcode)
         {
             case EVO_QUIT:
                 opQuit();
@@ -86,6 +87,11 @@ void WideVM::findSubprograms()
 
 //helpers for opcodes:
 
+int WideVM::fetch()
+{
+    return program[pc++];
+}
+
 float WideVM::read(int index)
 {
     if(index < 0)
@@ -122,32 +128,30 @@ void WideVM::opQuit()
 
 void WideVM::opSin()
 {
-    const int result = program[++pc];
-    const int arg = program[++pc];
+    const int result = fetch();
+    const int arg = fetch();
 
-    for(int i = begin; i < end; ++i)
+    while(loopParticles())
     {
-        float * ptr = getParticle(i);
-        ptr[result] = std::sin(ptr[arg]);
+        write(result) = std::sin(read(arg));
     }
 }
 
 void WideVM::opCos()
 {
-    const int result = program[++pc];
-    const int arg = program[++pc];
+    const int result = fetch();
+    const int arg = fetch();
 
-    for(int i = begin; i < end; ++i)
+    while(loopParticles())
     {
-        float * ptr = getParticle(i);
-        ptr[result] = std::cos(ptr[arg]);
+        write(result) = std::cos(read(arg));
     }
 }
 
 void WideVM::opCopy()
 {
-    const int to = program[++pc];
-    const int from = program[++pc];
+    const int to = fetch();
+    const int from = fetch();
 
     while(loopParticles())
     {
@@ -157,9 +161,9 @@ void WideVM::opCopy()
 
 void WideVM::opRand2()
 {
-    const int to = program[++pc];
-    const int min = program[++pc];
-    const int max = program[++pc];
+    const int to = fetch();
+    const int min = fetch();
+    const int max = fetch();
 
     while(loopParticles())
     {
@@ -170,10 +174,10 @@ void WideVM::opRand2()
 
 void WideVM::opMath2()
 {
-    const int op = program[++pc];
-    const int to = program[++pc];
-    const int arg1 = program[++pc];
-    const int arg2 = program[++pc];
+    const int op = fetch();
+    const int to = fetch();
+    const int arg1 = fetch();
+    const int arg2 = fetch();
     while(loopParticles())
     {
         switch(op)
