@@ -13,7 +13,7 @@ WideVM::WideVM()
 
 void WideVM::init(int size, int count, const float* initvals)
 {
-    particlesize = size;
+    m_particlesize = size;
     data.resize(size*count, 0.f);
     if(initvals)
     {
@@ -26,11 +26,11 @@ void WideVM::init(int size, int count, const float* initvals)
 
 void WideVM::runVmProgram(int subprog, int b, int e)
 {
-    begin = (b == -1)?0:b;
-    end = (e == -1)?particleCount():e;
+    m_begin = (b == -1)?0:b;
+    m_end = (e == -1)?particleCount():e;
 
-    pc = subprograms[subprog];
-    while(pc < program.size())
+    m_programcounter = subprograms[subprog];
+    while(m_programcounter < program.size())
     {
         startLoop(); //in case an opcode uses while loopParticle init counter for it
         const int opcode = fetch();
@@ -60,12 +60,12 @@ void WideVM::runVmProgram(int subprog, int b, int e)
 
 int WideVM::particleCount() const
 {
-    return data.size() / particlesize;
+    return data.size() / m_particlesize;
 }
 
 float* WideVM::getParticle(int index)
 {
-    return data.data() + index * particlesize;
+    return data.data() + index * m_particlesize;
 }
 
 void WideVM::findSubprograms()
@@ -87,7 +87,7 @@ void WideVM::findSubprograms()
 void WideVM::addParticles(int amount, int runprogram)
 {
     const int oldsize = particleCount();
-    data.resize(data.size() + amount * particlesize, 0.f);
+    data.resize(data.size() + amount * m_particlesize, 0.f);
     if(runprogram != -1)
     {
         runVmProgram(runprogram, oldsize);
@@ -98,7 +98,7 @@ void WideVM::addParticles(int amount, int runprogram)
 
 int WideVM::fetch()
 {
-    return program[pc++];
+    return program[m_programcounter++];
 }
 
 float WideVM::read(int index)
@@ -108,23 +108,23 @@ float WideVM::read(int index)
         index = -index - 1;
         return globals[index];
     }
-    return getParticle(pindex)[index];
+    return getParticle(m_pindex)[index];
 }
 
 float& WideVM::write(int index)
 {
-    return getParticle(pindex)[index];
+    return getParticle(m_pindex)[index];
 }
 
 void WideVM::startLoop()
 {
-    pindex = begin - 1;
+    m_pindex = m_begin - 1;
 }
 
 bool WideVM::loopParticles()
 {
-    ++pindex;
-    if(pindex >= end) return false;
+    ++m_pindex;
+    if(m_pindex >= m_end) return false;
     return true;
 }
 
@@ -132,7 +132,7 @@ bool WideVM::loopParticles()
 
 void WideVM::opQuit()
 {
-    pc = program.size(); //trick program into thinking codes ran out
+    m_programcounter = program.size(); //trick program into thinking codes ran out
 }
 
 void WideVM::opSin()
