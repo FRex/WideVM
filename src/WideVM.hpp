@@ -14,9 +14,19 @@
 
 namespace wvm {
 
+inline int findStrInVector(const char * str, const std::vector<std::string>& vec)
+{
+    if(str)
+        for(int i = 0; i < vec.size(); ++i)
+            if(vec[i] == str) return i;
+
+    return -1;
+}
+
 class VMLocation
 {
     friend class WideVM;
+    friend class Particle;
 public:
 
     VMLocation() = default;
@@ -29,10 +39,45 @@ public:
     {
         return Name != nullptr || Location != -1;
     }
-    
+
 private:
     const char * Name = nullptr;
     int Location = -1;
+
+};
+
+class Particle
+{
+    friend class WideVM;
+public:
+
+    float * getRaw()
+    {
+        return Ptr;
+    }
+
+    float getField(VMLocation loc)
+    {
+        if(loc.Location == -1)
+            loc.Location = findStrInVector(loc.Name, *Channels);
+        if(loc.Location == -1) return 0.f;
+        return Ptr[loc.Location];
+    }
+
+    void setField(VMLocation loc, float value)
+    {
+        if(loc.Location == -1)
+            loc.Location = findStrInVector(loc.Name, *Channels);
+        if(loc.Location == -1) return;
+        Ptr[loc.Location] = value;
+    }
+
+private:
+
+    Particle(float * ptr, const std::vector<std::string>* cha) : Ptr(ptr), Channels(cha) { }
+
+    float * Ptr;
+    const std::vector<std::string> * Channels;
 
 };
 
@@ -51,18 +96,20 @@ public:
     WideVM();
     void runVmProgram(VMLocation loc, int b = -1, int e = -1);
     int particleCount() const;
-    float * getParticle(int index);
     void findSubprograms();
     void addParticles(int amount, VMLocation runprogram = VMLocation());
-
+    Particle getParticle(int index);
     void setGlobal(VMLocation loc, float value);
     float getGlobal(VMLocation loc) const;
     VMLocation getGlobalLocation(const std::string& name) const;
 
     bool loadAsmProgram(const std::string& programcode, std::string * error = nullptr); //load entire asm program
 
+    VMLocation getFieldLocation(const std::string& name) const;
+    
 private:
     //helpers for opcodes:
+    float * getParticleData(int index);
     int fetch(); //fetch a value from bytecode and increment program counter
     float read(int index); //read a particle field or constant
     float& write(int index); //write to a particle field

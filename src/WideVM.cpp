@@ -7,15 +7,6 @@
 
 namespace wvm {
 
-static int findStrInVector(const char * str, const std::vector<std::string>& vec)
-{
-    if(str)
-        for(int i = 0; i < vec.size(); ++i)
-            if(vec[i] == str) return i;
-
-    return -1;
-}
-
 WideVM::WideVM()
 {
     m_twister.seed(std::rand());
@@ -65,7 +56,7 @@ int WideVM::particleCount() const
     return data.size() / m_particlesize;
 }
 
-float* WideVM::getParticle(int index)
+float* WideVM::getParticleData(int index)
 {
     return data.data() + index * m_particlesize;
 }
@@ -96,6 +87,11 @@ void WideVM::addParticles(int amount, VMLocation runprogram)
     }
 }
 
+Particle WideVM::getParticle(int index)
+{
+    return Particle(getParticleData(index), &m_channelnames);
+}
+
 void WideVM::setGlobal(VMLocation loc, float value)
 {
     if(loc.Location == -1)
@@ -118,6 +114,13 @@ VMLocation WideVM::getGlobalLocation(const std::string& name) const
 {
     VMLocation ret;
     ret.Location = findStrInVector(name.c_str(), m_globalnames);
+    return ret;
+}
+
+VMLocation WideVM::getFieldLocation(const std::string& name) const
+{
+    VMLocation ret;
+    ret.Location = findStrInVector(name.c_str(), m_channelnames);
     return ret;
 }
 
@@ -164,12 +167,12 @@ float WideVM::read(int index)
         index = -index - 1;
         return globals[index];
     }
-    return getParticle(m_pindex)[index];
+    return getParticleData(m_pindex)[index];
 }
 
 float& WideVM::write(int index)
 {
-    return getParticle(m_pindex)[index];
+    return getParticleData(m_pindex)[index];
 }
 
 void WideVM::startLoop()

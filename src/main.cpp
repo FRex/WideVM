@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 {
     std::srand(std::time(nullptr));
 
-    std::mt19937 twister;
-    std::uniform_real_distribution<float> distr(-M_PI, M_PI);
-    std::uniform_real_distribution<float> speeddistr(0.5f, 2.f);
+    int fpssamplecounter;
+    float fpssamples[100];
+    float fps = 0.f;
 
     sf::RenderWindow app(sf::VideoMode(640u, 480u), "wide vm");
     app.setFramerateLimit(60u);
@@ -41,8 +41,13 @@ int main(int argc, char** argv)
 
     sf::VertexArray arr(sf::Points, vm.particleCount());
 
+    const wvm::VMLocation x = vm.getFieldLocation("x");
+    const wvm::VMLocation y = vm.getFieldLocation("y");
+
     while(app.isOpen())
     {
+        sf::Clock clock;
+
         sf::Event eve;
         while(app.pollEvent(eve))
         {
@@ -67,15 +72,27 @@ int main(int argc, char** argv)
         app.clear();
         for(int i = 0; i < vm.particleCount(); ++i)
         {
-            const float * ptr = vm.getParticle(i);
-            if(i == 0) std::printf("%f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);
-
-
-            arr[i].position.x = ptr[0];
-            arr[i].position.y = ptr[1];
+            wvm::Particle par = vm.getParticle(i);
+            //            if(i == 0) std::printf("%f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);
+            arr[i].position.x = par.getField(x);
+            arr[i].position.y = par.getField(y);
         }
         app.draw(arr);
         app.display();
+
+        //calc fps:
+        fpssamples[fpssamplecounter] = clock.getElapsedTime().asSeconds();
+        ++fpssamplecounter;
+        if(fpssamplecounter == 100)
+        {
+            fps = 0.f;
+            for(int i = 0; i < 100; ++i)
+                fps += fpssamples[i];
+
+            fps = 100.f / fps;
+            fpssamplecounter = 0;
+            std::printf("FPS: %f\n", fps);
+        }
     }//while app isOpen
 }
 
