@@ -17,7 +17,7 @@ class WideVM
 {
 public:
     std::vector<float> data;
-    std::vector<char> program;
+    std::vector<short> program;
 
     int particlesize;
     int pc;
