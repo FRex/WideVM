@@ -12,7 +12,11 @@ namespace wvm {
 
 enum EVM_OPCODE
 {
-    EVO_ACCUMULATE = 1
+    EVO_QUIT = 0, //0 args -- quit the current program
+    EVO_ACCUMULATE = 1, //2 args -- add 2nd arg to 1st
+
+
+    EVO_OPCODES_COUNT //count, keep last, 'invalid'
 };
 
 }

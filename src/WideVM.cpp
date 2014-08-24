@@ -25,6 +25,9 @@ void WideVM::runVmProgram()
     {
         switch(program[pc])
         {
+            case EVO_QUIT:
+                opQuit();
+                break;
             case EVO_ACCUMULATE:
                 opAccumulate();
                 break;
@@ -43,6 +46,22 @@ float* WideVM::getParticle(int index)
     return data.data() + index * particlesize;
 }
 
+void WideVM::loadProgram(const std::string& filename)
+{
+    std::ifstream file(filename.c_str());
+    int opcode;
+    program.clear();
+    while(file >> opcode)
+        program.push_back(opcode);
+}
+
+//opcode calls:
+
+void WideVM::opQuit()
+{
+    pc = program.size(); //trick program into thinking codes ran out
+}
+
 void WideVM::opAccumulate()
 {
     const int accu = program[++pc];
@@ -53,15 +72,6 @@ void WideVM::opAccumulate()
         float * ptr = getParticle(i);
         ptr[accu] += ptr[operand];
     }
-}
-
-void WideVM::loadProgram(const std::string& filename)
-{
-    std::ifstream file(filename.c_str());
-    int opcode;
-    program.clear();
-    while(file >> opcode)
-        program.push_back(opcode);
 }
 
 } //wvm

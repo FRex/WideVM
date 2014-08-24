@@ -26,10 +26,12 @@ public:
     void runVmProgram();
     int particleCount() const;
     float * getParticle(int index);
-    void opAccumulate();
     void loadProgram(const std::string& filename);
 
 private:
+    //opcode calls:
+    void opQuit();
+    void opAccumulate();
 
 
 };
