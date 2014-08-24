@@ -6,9 +6,12 @@
  */
 
 #include <random>
+#include <fstream>
+#include <iterator>
 #include <SFML/Graphics.hpp>
 
 #include "WideVM.hpp"
+#include "Assembler.hpp"
 
 int main(int argc, char** argv)
 {
@@ -32,7 +35,16 @@ int main(int argc, char** argv)
         ptr[3] = speed * std::sin(angle);
     }
 
-    vm.loadProgram("program.txt");
+    std::ifstream file("code.txt");
+    std::string code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+
+    std::string error;
+    if(!wvm::assemble(code.c_str(), vm.program, &error))
+    {
+        std::printf("%s\n", error.c_str());
+        return 1;
+    }
 
     sf::VertexArray arr(sf::Points, vm.particleCount());
 

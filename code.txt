@@ -1,0 +1,3 @@
+accu 0 2
+accu 1 3
+quit
