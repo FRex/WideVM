@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
     std::srand(std::time(nullptr));
 
-    int fpssamplecounter;
+    int fpssamplecounter = 0;
     float fpssamples[100];
     float fps = 0.f;
 
