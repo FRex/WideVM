@@ -151,6 +151,14 @@ bool WideVM::loadAsmProgram(std::string programcode, std::string * error)
 
     findSubprograms(); //check if we have any sub progs?
 
+    if(m_subprograms.empty())
+    {
+        if(error)
+            (*error) = "there are no subprograms in this program";
+
+        return false;
+    }
+
     return true;
 }
 
