@@ -1,15 +1,15 @@
 #include "WideVM.hpp"
 #include "VMOpcodes.hpp"
 #include "Assembler.hpp"
-#include <fstream>
 #include <cstring>
 #include <cmath>
+#include <ctime>
 
 namespace wvm {
 
 WideVM::WideVM()
 {
-    m_twister.seed(std::rand());
+    m_twister.seed(std::time(nullptr));
 }
 
 void WideVM::runVmProgram(VMLocation loc, int b, int e)
@@ -22,8 +22,8 @@ void WideVM::runVmProgram(VMLocation loc, int b, int e)
 
     if(loc.Location == -1) return;
 
-    m_programcounter = subprograms[loc.Location];
-    while(m_programcounter < program.size())
+    m_programcounter = m_subprograms[loc.Location];
+    while(m_programcounter < m_program.size())
     {
         startLoop(); //in case an opcode uses while loopParticle init counter for it
         const int opcode = fetch();
@@ -53,26 +53,26 @@ void WideVM::runVmProgram(VMLocation loc, int b, int e)
 
 int WideVM::particleCount() const
 {
-    return data.size() / m_particlesize;
+    return m_particles.size() / m_particlesize;
 }
 
 float* WideVM::getParticleData(int index)
 {
-    return data.data() + index * m_particlesize;
+    return m_particles.data() + index * m_particlesize;
 }
 
 void WideVM::findSubprograms()
 {
-    subprograms.clear();
-    for(int i = 0; i < program.size(); ++i)
+    m_subprograms.clear();
+    for(int i = 0; i < m_program.size(); ++i)
     {
-        if(program[i] == EVO_SUBPROGRAM)
+        if(m_program[i] == EVO_SUBPROGRAM)
         {
-            subprograms.push_back(i);
+            m_subprograms.push_back(i);
         }
         else
         {
-            i += opcodeArgCount(static_cast<EVM_OPCODE>(program[i]));
+            i += opcodeArgCount(static_cast<EVM_OPCODE>(m_program[i]));
         }
     }
 }
@@ -80,7 +80,7 @@ void WideVM::findSubprograms()
 void WideVM::addParticles(int amount, VMLocation runprogram)
 {
     const int oldsize = particleCount();
-    data.resize(data.size() + amount * m_particlesize, 0.f);
+    m_particles.resize(m_particles.size() + amount * m_particlesize, 0.f);
     if(runprogram.valid())
     {
         runVmProgram(runprogram, oldsize);
@@ -98,7 +98,7 @@ void WideVM::setGlobal(VMLocation loc, float value)
         loc.Location = findStrInVector(loc.Name, m_globalnames);
 
     if(loc.Location == -1) return;
-    globals[loc.Location] = value;
+    m_globals[loc.Location] = value;
 }
 
 float WideVM::getGlobal(VMLocation loc) const
@@ -107,7 +107,7 @@ float WideVM::getGlobal(VMLocation loc) const
         loc.Location = findStrInVector(loc.Name, m_globalnames);
 
     if(loc.Location == -1) return 0.f;
-    return globals[loc.Location];
+    return m_globals[loc.Location];
 }
 
 VMLocation WideVM::getGlobalLocation(const std::string& name) const
@@ -137,14 +137,14 @@ bool WideVM::loadAsmProgram(std::string programcode, std::string * error)
 
     stripCppComments(programcode);
 
-    if(!bakeHeader(programcode.substr(0, atmark + 1u), m_globalnames, globals, m_channelnames, m_prognames, error))
+    if(!bakeHeader(programcode.substr(0, atmark + 1u), m_globalnames, m_globals, m_channelnames, m_prognames, error))
     {
         return false;
     }
 
     m_particlesize = m_channelnames.size();
 
-    if(!assemble(programcode.substr(atmark + 1u), program, error))
+    if(!assemble(programcode.substr(atmark + 1u), m_program, error))
     {
         return false;
     }
@@ -158,7 +158,7 @@ bool WideVM::loadAsmProgram(std::string programcode, std::string * error)
 
 int WideVM::fetch()
 {
-    return program[m_programcounter++];
+    return m_program[m_programcounter++];
 }
 
 float WideVM::read(int index)
@@ -166,7 +166,7 @@ float WideVM::read(int index)
     if(index < 0)
     {
         index = -index - 1;
-        return globals[index];
+        return m_globals[index];
     }
     return getParticleData(m_pindex)[index];
 }
@@ -192,7 +192,7 @@ bool WideVM::loopParticles()
 
 void WideVM::opQuit()
 {
-    m_programcounter = program.size(); //trick program into thinking codes ran out
+    m_programcounter = m_program.size(); //trick program into thinking codes ran out
 }
 
 void WideVM::opSin()

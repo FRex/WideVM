@@ -5,8 +5,6 @@
  * Created on August 24, 2014, 12:43 AM
  */
 
-#include <random>
-#include <cmath>
 #include <fstream>
 #include <iterator>
 #include <SFML/Graphics.hpp>
@@ -16,8 +14,6 @@
 
 int main(int argc, char** argv)
 {
-    std::srand(std::time(nullptr));
-
     int fpssamplecounter = 0;
     float fpssamples[100];
     float fps = 0.f;
@@ -48,6 +44,7 @@ int main(int argc, char** argv)
     {
         sf::Clock clock;
 
+        //handle events:
         sf::Event eve;
         while(app.pollEvent(eve))
         {
@@ -59,21 +56,20 @@ int main(int argc, char** argv)
             if(eve.type == sf::Event::MouseButtonPressed)
             {
                 //set up the globals for next prog:
-                vm.globals[0] = eve.mouseButton.x;
-                vm.globals[1] = eve.mouseButton.y;
-                //run 0 prog on 100 new particles
+                vm.setGlobal("x", eve.mouseButton.x);
+                vm.setGlobal("y", eve.mouseButton.y);
+                //run  prog on 100 new particles
                 vm.addParticles(100, "init");
                 arr.resize(arr.getVertexCount() + 100u);
             }
         }
 
+        //run vm and draw particles:
         vm.runVmProgram("run");
-
         app.clear();
         for(int i = 0; i < vm.particleCount(); ++i)
         {
             wvm::Particle par = vm.getParticle(i);
-            //            if(i == 0) std::printf("%f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);
             arr[i].position.x = par.getField(x);
             arr[i].position.y = par.getField(y);
         }
@@ -91,7 +87,7 @@ int main(int argc, char** argv)
 
             fps = 100.f / fps;
             fpssamplecounter = 0;
-            std::printf("FPS: %f\n PARTICLES: %d\n", fps, vm.particleCount());
+            std::printf("FPS: %f\nPARTICLES: %d\n", fps, vm.particleCount());
         }
     }//while app isOpen
 }

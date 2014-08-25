@@ -10,6 +10,7 @@
 
 namespace wvm {
 
+//all of vm opcodes, including marker ones like EVO_SUBPROGRAM:
 enum EVM_OPCODE
 {
     EVO_QUIT = 0, //0 args -- quit the current program
@@ -24,9 +25,13 @@ enum EVM_OPCODE
     EVO_OPCODES_COUNT //keep last, 'invalid' opcode, not EVO_COUNT in case there is a real count opcode later
 };
 
+//how many args does the opcode take?
 int opcodeArgCount(EVM_OPCODE code);
 
+//how is opcode represented in asm code
 const char * opcodeToStr(EVM_OPCODE code);
+
+//convert asm opcode string to opcode it represents, if null terminated its ok to not pass length
 EVM_OPCODE strToOpcode(const char * str, int size = -1);
 
 }
