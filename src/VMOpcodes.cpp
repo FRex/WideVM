@@ -47,7 +47,8 @@ EVM_OPCODE strToOpcode(const char * str, int size)
         size = std::strlen(str);
 
     for(int i = 0; i < EVO_OPCODES_COUNT; ++i)
-        if(0 == std::strncmp(str, infos[i].String, size)) return infos[i].Opcode;
+        if(0 == std::strncmp(str, infos[i].String, size) && infos[i].String[size] == '\0')
+            return infos[i].Opcode;
 
     return EVO_OPCODES_COUNT;
 }
